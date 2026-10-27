@@ -81,7 +81,7 @@
     body.light-theme .stars { opacity: 0; }
     @keyframes twinkle { 0%,100% {opacity:0.3} 50% {opacity:0.7} }
 
-    .container { z-index: 10; text-align: center; padding: 20px; width: 100%; max-width: 450px; }
+    .container { z-index: 10; text-align: center; padding: 20px; width: 100%; max-width: 450px; padding-bottom: 70px; /* Footer ke liye jagah */ }
 
     .title {
       font-size: 2rem;
@@ -203,34 +203,22 @@
     }
     .icon-btn:hover { background: var(--btn-hover); transform: scale(1.1); }
 
-    @media (max-width: 480px) {
-      .title { font-size: 1.6rem; }
-       .container { padding-bottom: 60px; }
-      .card { padding: 30px 20px; border-radius: 20px; }
-      .arabic-name { font-size: 2.8rem; }
-      .urdu-meaning { font-size: 1.3rem; line-height: 2; }
-      .btn { padding: 10px 14px; font-size: 0.9rem; }
-      .top-controls { top: 15px; right: 15px; }
-      .icon-btn { width: 40px; height: 40px; font-size: 1rem; }
-    }
-    
-        /* ================= FOOTER MARQUEE CSS ================= */
+    /* ================= FOOTER MARQUEE CSS ================= */
     .footer-marquee {
-      position: absolute;
+      position: fixed; /* Mobile aur PC par fix rahega */
       bottom: 0;
       left: 0;
       width: 100%;
-      background: rgba(255, 255, 255, 0.05); /* Glassy background */
+      background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       padding: 12px 0;
       overflow: hidden;
       white-space: nowrap;
-      z-index: 20;
+      z-index: 50;
     }
 
-    /* Light theme ke liye footer adjust */
     body.light-theme .footer-marquee {
       background: rgba(0, 0, 0, 0.05);
       border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -238,15 +226,15 @@
 
     .marquee-content {
       display: inline-block;
-      padding-left: 100%; /* Text ko screen ke bahar se shuru karne ke liye */
+      padding-left: 100%;
       animation: marquee 15s linear infinite;
     }
 
     .marquee-content span {
       font-family: sans-serif;
-      font-weight: 900; /* Bold Text */
+      font-weight: 900;
       font-size: 1.1rem;
-      background: linear-gradient(90deg, #fbbf24, #f472b6, #60a5fa); /* Text color gradient */
+      background: linear-gradient(90deg, #fbbf24, #f472b6, #60a5fa);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -254,10 +242,20 @@
       text-transform: uppercase;
     }
 
-    /* Animation: Right to Left chalne ke liye */
     @keyframes marquee {
       0% { transform: translate(0, 0); }
       100% { transform: translate(-100%, 0); }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 1.6rem; }
+      .card { padding: 30px 20px; border-radius: 20px; }
+      .arabic-name { font-size: 2.8rem; }
+      .urdu-meaning { font-size: 1.3rem; line-height: 2; }
+      .btn { padding: 10px 14px; font-size: 0.9rem; }
+      .top-controls { top: 15px; right: 15px; }
+      .icon-btn { width: 40px; height: 40px; font-size: 1rem; }
+      .container { padding-bottom: 80px; }
     }
     /* ================= CSS END ================= */
   </style>
@@ -293,7 +291,8 @@
       <button id="next" class="btn">▶</button>
     </div>
   </main>
-    <!-- Footer Marquee Start -->
+
+  <!-- Footer Marquee Start -->
   <footer class="footer-marquee">
     <div class="marquee-content">
       <span>✨ Made by Love Muhammad Tariq Mahboob ✨</span>
@@ -408,8 +407,7 @@
     // ================= JAVASCRIPT LOGIC =================
     let currentIndex = 0;
     let autoPlayInterval = null;
-    
-    const audioPlayer = new Audio();
+    let voices = [];
 
     const arabicEl   = document.getElementById('arabic');
     const translitEl = document.getElementById('translit');
@@ -419,44 +417,55 @@
     const speakBtn   = document.getElementById('speakBtn');
     const themeToggleBtn = document.getElementById('themeToggle');
 
-    // AUDIO FUNCTION (Using Internet Archive - 100% Reliable)
+    // Voice Setup
+    function loadVoices() {
+      voices = window.speechSynthesis.getVoices();
+    }
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
     function playCurrentAudio() {
       speakBtn.classList.remove('playing');
-      const audioNumber = currentIndex + 1;
+      window.speechSynthesis.cancel(); // Stop prev
+
+      const arabicText = names[currentIndex].arabic;
+      const utterance = new SpeechSynthesisUtterance(arabicText);
       
-      // Internet Archive server URL (Yeh kabhi block nahi karta)
-      const audioUrl = `https://ia801504.us.archive.org/13/items/99-names-of-allah-audio/${audioNumber}.mp3`;
+      utterance.lang = 'ar-SA'; // Force Arabic
       
-      audioPlayer.src = audioUrl;
+      let preferredVoice = voices.find(v => v.lang.includes('ar') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('naayf')));
+      if (!preferredVoice) {
+        preferredVoice = voices.find(v => v.lang.includes('ar'));
+      }
       
-      audioPlayer.onplay = () => speakBtn.classList.add('playing');
-      audioPlayer.onended = () => speakBtn.classList.remove('playing');
-      audioPlayer.onerror = () => {
-        speakBtn.classList.remove('playing');
-        // Agar internet archive fail ho toh Google se fallback
-        audioPlayer.src = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q=${encodeURIComponent(names[currentIndex].arabic)}`;
-        audioPlayer.play().catch(e => console.log("Fallback error", e));
-      };
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
       
-      audioPlayer.play().catch(e => {
-        console.log("Audio play error:", e);
-        speakBtn.classList.remove('playing');
-      });
+      utterance.rate = 0.8; 
+      utterance.pitch = 0.9; 
+
+      utterance.onstart = () => speakBtn.classList.add('playing');
+      utterance.onend = () => speakBtn.classList.remove('playing');
+      utterance.onerror = () => speakBtn.classList.remove('playing');
+
+      window.speechSynthesis.speak(utterance);
     }
 
     speakBtn.onclick = () => {
-      if(audioPlayer.paused) {
-        playCurrentAudio();
-      } else {
-        audioPlayer.pause();
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
         speakBtn.classList.remove('playing');
+      } else {
+        playCurrentAudio();
       }
     };
 
     function showName(index) {
       card.classList.add('fade');
-      audioPlayer.pause(); 
-      
+      window.speechSynthesis.cancel(); 
+      speakBtn.classList.remove('playing');
+
       setTimeout(() => {
         const n = names[index];
         arabicEl.textContent   = n.arabic;
@@ -491,6 +500,7 @@
         clearInterval(autoPlayInterval);
         autoPlayInterval = null;
         e.target.textContent = '▶ Auto';
+        window.speechSynthesis.cancel(); 
       } else {
         playCurrentAudio(); 
         
@@ -498,7 +508,8 @@
           currentIndex = (currentIndex + 1) % names.length;
           showName(currentIndex);
           setTimeout(playCurrentAudio, 500);
-        }, 5000); 
+        }, 4000); 
+        
         e.target.textContent = '⏸ Pause';
       }
     };
