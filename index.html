@@ -355,9 +355,7 @@
     // ================= JAVASCRIPT LOGIC =================
     let currentIndex = 0;
     let autoPlayInterval = null;
-    
-    // Real Audio Player
-    const audioPlayer = new Audio();
+    let voices = [];
 
     const arabicEl   = document.getElementById('arabic');
     const translitEl = document.getElementById('translit');
@@ -367,46 +365,56 @@
     const speakBtn   = document.getElementById('speakBtn');
     const themeToggleBtn = document.getElementById('themeToggle');
 
-    // PLAY AUDIO FUNCTION (Google TTS API - Direct Link)
+    // Browser ki voices load karein
+    function loadVoices() {
+      voices = window.speechSynthesis.getVoices();
+    }
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    // AUDIO FUNCTION (Forcing Arabic Voice)
     function playCurrentAudio() {
       speakBtn.classList.remove('playing');
       
-      // Agar pehle se koi awaaz chal rahi hai toh use rok dein
-      audioPlayer.pause();
+      // Pehle se chal rahi awaaz rok dein
+      window.speechSynthesis.cancel();
 
       const arabicText = names[currentIndex].arabic;
+      const utterance = new SpeechSynthesisUtterance(arabicText);
       
-      // Google Translate TTS API ka direct link (Yeh browser mein block nahi hota)
-      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q=${encodeURIComponent(arabicText)}`;
+      // Awaaz ko Arabic set karein
+      utterance.lang = 'ar-SA';
       
-      audioPlayer.src = audioUrl;
+      // Agar system me Arabic voice majood hai toh use karein
+      let arabicVoice = voices.find(v => v.lang.includes('ar'));
+      if (arabicVoice) {
+        utterance.voice = arabicVoice;
+      }
       
-      audioPlayer.onplay = () => speakBtn.classList.add('playing');
-      audioPlayer.onended = () => speakBtn.classList.remove('playing');
-      audioPlayer.onerror = () => {
-        speakBtn.classList.remove('playing');
-        alert("Awaaz load nahi ho saki. Internet check karein.");
-      };
-      
-      audioPlayer.play().catch(e => {
-        console.log("Audio play blocked by browser.", e);
-        speakBtn.classList.remove('playing');
-      });
+      utterance.rate = 0.8; // Thora slow taake samajh aaye
+      utterance.pitch = 1;
+
+      utterance.onstart = () => speakBtn.classList.add('playing');
+      utterance.onend = () => speakBtn.classList.remove('playing');
+      utterance.onerror = () => speakBtn.classList.remove('playing');
+
+      window.speechSynthesis.speak(utterance);
     }
 
     speakBtn.onclick = () => {
-      if(audioPlayer.paused) {
-        playCurrentAudio();
-      } else {
-        audioPlayer.pause();
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
         speakBtn.classList.remove('playing');
+      } else {
+        playCurrentAudio();
       }
     };
 
     function showName(index) {
       card.classList.add('fade');
-      audioPlayer.pause(); 
-      
+      window.speechSynthesis.cancel(); 
+      speakBtn.classList.remove('playing');
+
       setTimeout(() => {
         const n = names[index];
         arabicEl.textContent   = n.arabic;
@@ -441,8 +449,7 @@
         clearInterval(autoPlayInterval);
         autoPlayInterval = null;
         e.target.textContent = '▶ Auto';
-        audioPlayer.pause();
-        speakBtn.classList.remove('playing');
+        window.speechSynthesis.cancel(); 
       } else {
         playCurrentAudio(); 
         
