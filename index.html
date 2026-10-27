@@ -248,7 +248,7 @@
     </div>
   </main>
 
-    <script>
+  <script>
     // ================= 99 NAMES DATA =================
     const names = [
       { arabic: "الرَّحْمَٰنُ", translit: "Ar-Rahman", urdu: "بے حد رحم کرنے والا" },
@@ -355,7 +355,8 @@
     // ================= JAVASCRIPT LOGIC =================
     let currentIndex = 0;
     let autoPlayInterval = null;
-    const audioPlayer = new Audio();
+    let voices = [];
+    let isMuted = false;
 
     const arabicEl   = document.getElementById('arabic');
     const translitEl = document.getElementById('translit');
@@ -365,44 +366,63 @@
     const speakBtn   = document.getElementById('speakBtn');
     const themeToggleBtn = document.getElementById('themeToggle');
 
-    // 100% WORKING AUDIO FUNCTION (Direct MP3 Link)
+    // 1. VOICE SETUP (Ensure voice loads properly)
+    function loadVoices() {
+      voices = window.speechSynthesis.getVoices();
+    }
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    // 2. PLAY AUDIO (Using Browser's Native TTS)
     function playCurrentAudio() {
+      if (isMuted) return;
+      
+      // Stop any ongoing speech
+      window.speechSynthesis.cancel(); 
       speakBtn.classList.remove('playing');
+
+      const arabicText = names[currentIndex].arabic;
+      const utterance = new SpeechSynthesisUtterance(arabicText);
       
-      const audioNumber = currentIndex + 1;
-      // Yeh website CORS block nahi karti, isliye audio direct chalega
-      const audioUrl = `https://www.islamicfinder.org/99-names-of-allah/audio/${audioNumber}.mp3`;
+      // Trick: Try to find Arabic, Urdu, or Hindi voice.
+      // If none found, just use the default system voice.
+      let voice = voices.find(v => v.lang.includes('ar')) || 
+                  voices.find(v => v.lang.includes('ur')) || 
+                  voices.find(v => v.lang.includes('hi')) || 
+                  voices[0];
+                  
+      if (voice) {
+        utterance.voice = voice;
+      }
       
-      audioPlayer.src = audioUrl;
-      
-      audioPlayer.onplay = () => speakBtn.classList.add('playing');
-      audioPlayer.onended = () => speakBtn.classList.remove('playing');
-      audioPlayer.onerror = () => {
-        speakBtn.classList.remove('playing');
-        // Agar IslamicFinder ka link kaam na kare toh fallback
-        audioPlayer.src = `https://www.islamcan.com/audio/99-names-of-allah/${audioNumber}.mp3`;
-        audioPlayer.play().catch(e => console.log("Fallback audio error:", e));
-      };
-      
-      audioPlayer.play().catch(e => {
-        console.log("Audio play error:", e);
-        speakBtn.classList.remove('playing');
-      });
+      utterance.rate = 0.8; // Slow speed for clear pronunciation
+      utterance.pitch = 1;
+
+      // Animation
+      utterance.onstart = () => speakBtn.classList.add('playing');
+      utterance.onend = () => speakBtn.classList.remove('playing');
+      utterance.onerror = () => speakBtn.classList.remove('playing');
+
+      // Play
+      window.speechSynthesis.speak(utterance);
     }
 
     speakBtn.onclick = () => {
-      if(audioPlayer.paused) {
-        playCurrentAudio();
-      } else {
-        audioPlayer.pause();
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
         speakBtn.classList.remove('playing');
+      } else {
+        playCurrentAudio();
       }
     };
 
     function showName(index) {
       card.classList.add('fade');
-      audioPlayer.pause(); 
       
+      // Stop ongoing audio when changing name
+      window.speechSynthesis.cancel(); 
+      speakBtn.classList.remove('playing');
+
       setTimeout(() => {
         const n = names[index];
         arabicEl.textContent   = n.arabic;
@@ -437,14 +457,17 @@
         clearInterval(autoPlayInterval);
         autoPlayInterval = null;
         e.target.textContent = '▶ Auto';
+        window.speechSynthesis.cancel(); // Stop audio on pause
       } else {
         playCurrentAudio(); 
         
         autoPlayInterval = setInterval(() => {
           currentIndex = (currentIndex + 1) % names.length;
           showName(currentIndex);
+          // Wait for the fade animation, then play audio
           setTimeout(playCurrentAudio, 500);
-        }, 5000); 
+        }, 4000); 
+        
         e.target.textContent = '⏸ Pause';
       }
     };
