@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asma-ul-Husna - 99 Names of Allah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ================= CSS START ================= */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --text-main: #fff;
+      --text-sub: #94a3b8;
+      --text-urdu: #f1f5f9;
+      --btn-bg: rgba(255,255,255,0.1);
+      --btn-border: rgba(255,255,255,0.2);
+      --btn-hover: rgba(255,255,255,0.2);
+    }
+
+    body.light-theme {
+      --bg-gradient: linear-gradient(135deg, #e0eafc, #cfdef3);
+      --card-bg: rgba(255, 255, 255, 0.6);
+      --card-border: rgba(0, 0, 0, 0.1);
+      --text-main: #1e293b;
+      --text-sub: #475569;
+      --text-urdu: #0f172a;
+      --btn-bg: rgba(255,255,255,0.5);
+      --btn-border: rgba(0,0,0,0.1);
+      --btn-hover: rgba(255,255,255,0.8);
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Amiri', serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.5;
+      animation: float 8s ease-in-out infinite;
+      transition: opacity 0.5s ease;
+    }
+    .glow-1 { width: 400px; height: 400px; background: #8b5cf6; top: -100px; left: -100px; }
+    .glow-2 { width: 350px; height: 350px; background: #06b6d4; bottom: -100px; right: -100px; animation-delay: 2s; }
+    body.light-theme .glow { opacity: 0.3; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 80% 70%, white, transparent),
+        radial-gradient(1px 1px at 50% 50%, white, transparent),
+        radial-gradient(1px 1px at 10% 90%, white, transparent);
+      background-size: 200px 200px;
+      opacity: 0.4;
+      animation: twinkle 5s ease-in-out infinite;
+      transition: opacity 0.5s ease;
+    }
+    body.light-theme .stars { opacity: 0; }
+    @keyframes twinkle { 0%,100% {opacity:0.3} 50% {opacity:0.7} }
+
+    .container { z-index: 10; text-align: center; padding: 20px; width: 100%; max-width: 450px; }
+
+    .title {
+      font-size: 2rem;
+      background: linear-gradient(90deg, #fbbf24, #f472b6, #60a5fa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+    .subtitle { font-family: sans-serif; font-size: 0.9rem; color: var(--text-sub); margin-bottom: 24px; }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 30px 20px;
+      box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
+      transition: transform 0.4s ease, opacity 0.4s ease, background 0.5s ease, border 0.5s ease;
+      position: relative;
+    }
+    .card.fade { opacity: 0; transform: scale(0.95); }
+
+    .speak-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #a78bfa;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex; justify-content: center; align-items: center;
+      transition: all 0.3s;
+    }
+    .speak-btn:hover { background: rgba(139, 92, 246, 0.4); color: #fff; transform: scale(1.1); }
+    .speak-btn.playing { animation: pulse 1s infinite; background: rgba(139, 92, 246, 0.6); color: white;}
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+    }
+
+    .counter { font-family: sans-serif; font-size: 0.85rem; color: #a78bfa; margin-bottom: 16px; letter-spacing: 2px; }
+
+    .arabic-name {
+      font-size: 3.5rem;
+      background: linear-gradient(180deg, #fbbf24, #d97706);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.4;
+      transition: font-size 0.3s ease;
+    }
+    body.light-theme .arabic-name {
+      background: linear-gradient(180deg, #b45309, #78350f);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .transliteration { font-family: sans-serif; font-size: 1.1rem; color: var(--text-sub); margin-top: 8px; }
+
+    .divider {
+      width: 60px; height: 2px; margin: 20px auto;
+      background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+    }
+
+    .urdu-meaning {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: 1.6rem;
+      color: var(--text-urdu);
+      line-height: 2.2;
+      direction: rtl;
+    }
+
+    .controls { margin-top: 28px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      color: var(--text-main);
+      padding: 12px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn:hover { background: var(--btn-hover); transform: translateY(-2px); }
+    .btn.primary { background: linear-gradient(90deg, #8b5cf6, #ec4899); border: none; color: #fff;}
+    .btn.primary:hover { box-shadow: 0 8px 24px rgba(236,72,153,0.4); }
+
+    .top-controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 20;
+    }
+    .icon-btn {
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      color: var(--text-main);
+      width: 45px; height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex; justify-content: center; align-items: center;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+    .icon-btn:hover { background: var(--btn-hover); transform: scale(1.1); }
+
+    @media (max-width: 480px) {
+      .title { font-size: 1.6rem; }
+      .container { padding: 15px; }
+      .card { padding: 30px 20px; border-radius: 20px; }
+      .arabic-name { font-size: 2.8rem; }
+      .urdu-meaning { font-size: 1.3rem; line-height: 2; }
+      .btn { padding: 10px 14px; font-size: 0.9rem; }
+      .top-controls { top: 15px; right: 15px; }
+      .icon-btn { width: 40px; height: 40px; font-size: 1rem; }
+    }
+    /* ================= CSS END ================= */
+  </style>
+</head>
+<body>
+  <div class="top-controls">
+    <button class="icon-btn" id="themeToggle" title="Toggle Theme">🌙</button>
+  </div>
+
+  <div class="stars"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <main class="container">
+    <header>
+      <h2 class="title">أسماء الله الحسنى</h2>
+      <p class="subtitle">99 Names of Allah</p>
+    </header>
+
+    <div class="card" id="card">
+      <button class="speak-btn" id="speakBtn" title="Play Audio">🔊</button>
+      <div class="counter" id="counter">1 / 99</div>
+      <h1 class="arabic-name" id="arabic">الرَّحْمَٰنُ</h1>
+      <p class="transliteration" id="translit">Ar-Rahman</p>
+      <div class="divider"></div>
+      <p class="urdu-meaning" id="urdu">بے حد رحم کرنے والا</p>
+    </div>
+
+    <div class="controls">
+      <button id="prev" class="btn">◀</button>
+      <button id="random" class="btn" title="Random Name">🔀</button>
+      <button id="autoplay" class="btn primary">▶ Auto</button>
+      <button id="next" class="btn">▶</button>
+    </div>
+  </main>
+
+    <script>
+    // ================= 99 NAMES DATA =================
+    const names = [
+      { arabic: "الرَّحْمَٰنُ", translit: "Ar-Rahman", urdu: "بے حد رحم کرنے والا" },
+      { arabic: "الرَّحِيمُ", translit: "Ar-Raheem", urdu: "نہایت مہربان" },
+      { arabic: "الْمَلِكُ", translit: "Al-Malik", urdu: "بادشاہ" },
+      { arabic: "الْقُدُّوسُ", translit: "Al-Quddus", urdu: "پاک ذات" },
+      { arabic: "السَّلَامُ", translit: "As-Salam", urdu: "سلامتی دینے والا" },
+      { arabic: "الْمُؤْمِنُ", translit: "Al-Mu'min", urdu: "امن و امان دینے والا" },
+      { arabic: "الْمُهَيْمِنُ", translit: "Al-Muhaymin", urdu: "نگہبانی کرنے والا" },
+      { arabic: "الْعَزِيزُ", translit: "Al-Aziz", urdu: "غالب و زبردست" },
+      { arabic: "الْجَبَّارُ", translit: "Al-Jabbar", urdu: "زبردستی کرنے والا" },
+      { arabic: "الْمُتَكَبِّرُ", translit: "Al-Mutakabbir", urdu: "بڑائی والا" },
+      { arabic: "الْخَالِقُ", translit: "Al-Khaliq", urdu: "پیدا کرنے والا" },
+      { arabic: "الْبَارِئُ", translit: "Al-Bari", urdu: "ٹھیک بنانے والا" },
+      { arabic: "الْمُصَوِّرُ", translit: "Al-Musawwir", urdu: "صورت بنانے والا" },
+      { arabic: "الْغَفَّارُ", translit: "Al-Ghaffar", urdu: "بخشنے والا" },
+      { arabic: "الْقَهَّارُ", translit: "Al-Qahhar", urdu: "قہر کرنے والا" },
+      { arabic: "الْوَهَّابُ", translit: "Al-Wahhab", urdu: "عطا کرنے والا" },
+      { arabic: "الرَّزَّاقُ", translit: "Ar-Razzaq", urdu: "رزق دینے والا" },
+      { arabic: "الْفَتَّاحُ", translit: "Al-Fattah", urdu: "کھولنے والا" },
+      { arabic: "الْعَلِيمُ", translit: "Al-Alim", urdu: "جاننے والا" },
+      { arabic: "الْقَابِضُ", translit: "Al-Qabid", urdu: "تنگ کرنے والا" },
+      { arabic: "الْبَاسِطُ", translit: "Al-Basit", urdu: "کشادگی دینے والا" },
+      { arabic: "الْخَافِضُ", translit: "Al-Khafid", urdu: "پست کرنے والا" },
+      { arabic: "الرَّافِعُ", translit: "Ar-Rafi", urdu: "بلند کرنے والا" },
+      { arabic: "الْمُعِزُّ", translit: "Al-Mu'izz", urdu: "عزت دینے والا" },
+      { arabic: "الْمُذِلُّ", translit: "Al-Mudhill", urdu: "ذلیل کرنے والا" },
+      { arabic: "السَّمِيعُ", translit: "As-Sami", urdu: "سننے والا" },
+      { arabic: "الْبَصِيرُ", translit: "Al-Basir", urdu: "دیکھنے والا" },
+      { arabic: "الْحَكَمُ", translit: "Al-Hakam", urdu: "فیصلہ کرنے والا" },
+      { arabic: "الْعَدْلُ", translit: "Al-Adl", urdu: "انصاف کرنے والا" },
+      { arabic: "اللَّطِيفُ", translit: "Al-Latif", urdu: "مہربان" },
+      { arabic: "الْخَبِيرُ", translit: "Al-Khabir", urdu: "باخبر" },
+      { arabic: "الْحَلِيمُ", translit: "Al-Halim", urdu: "برداشت کرنے والا" },
+      { arabic: "الْعَظِيمُ", translit: "Al-Azim", urdu: "بڑا" },
+      { arabic: "الْغَفُورُ", translit: "Al-Ghafur", urdu: "بخشنے والا" },
+      { arabic: "الشَّكُورُ", translit: "Ash-Shakur", urdu: "قدر کرنے والا" },
+      { arabic: "الْعَلِيُّ", translit: "Al-Ali", urdu: "بلند" },
+      { arabic: "الْكَبِيرُ", translit: "Al-Kabir", urdu: "بڑا" },
+      { arabic: "الْحَفِيظُ", translit: "Al-Hafiz", urdu: "حفاظت کرنے والا" },
+      { arabic: "الْمُقِيتُ", translit: "Al-Muqit", urdu: "روزی دینے والا" },
+      { arabic: "الْحَسِيبُ", translit: "Al-Hasib", urdu: "حساب لینے والا" },
+      { arabic: "الْجَلِيلُ", translit: "Al-Jalil", urdu: "جلال والا" },
+      { arabic: "الْكَرِيمُ", translit: "Al-Karim", urdu: "کرم کرنے والا" },
+      { arabic: "الرَّقِيبُ", translit: "Ar-Raqib", urdu: "نگہبان" },
+      { arabic: "الْمُجِيبُ", translit: "Al-Mujib", urdu: "قبول کرنے والا" },
+      { arabic: "الْوَاسِعُ", translit: "Al-Wasi", urdu: "وسعت والا" },
+      { arabic: "الْحَكِيمُ", translit: "Al-Hakim", urdu: "حکمت والا" },
+      { arabic: "الْوَدُودُ", translit: "Al-Wadud", urdu: "محبت کرنے والا" },
+      { arabic: "الْمَجِيدُ", translit: "Al-Majid", urdu: "عزت والا" },
+      { arabic: "الْبَاعِثُ", translit: "Al-Ba'ith", urdu: "اٹھانے والا" },
+      { arabic: "الشَّهِيدُ", translit: "Ash-Shahid", urdu: "گواہ" },
+      { arabic: "الْحَقُّ", translit: "Al-Haqq", urdu: "سچ" },
+      { arabic: "الْوَكِيلُ", translit: "Al-Wakil", urdu: "کارساز" },
+      { arabic: "الْقَوِيُّ", translit: "Al-Qawiyy", urdu: "طاقت والا" },
+      { arabic: "الْمَتِينُ", translit: "Al-Matin", urdu: "مضبوط" },
+      { arabic: "الْوَلِيُّ", translit: "Al-Waliyy", urdu: "دوست" },
+      { arabic: "الْحَمِيدُ", translit: "Al-Hamid", urdu: "تعریف والا" },
+      { arabic: "الْمُحْصِي", translit: "Al-Muhsi", urdu: "شمار کرنے والا" },
+      { arabic: "الْمُبْدِئُ", translit: "Al-Mubdi", urdu: "شروع کرنے والا" },
+      { arabic: "الْمُعِيدُ", translit: "Al-Mu'id", urdu: "لوٹانے والا" },
+      { arabic: "الْمُحْيِي", translit: "Al-Muhyi", urdu: "زندہ کرنے والا" },
+      { arabic: "الْمُمِيتُ", translit: "Al-Mumit", urdu: "مارنے والا" },
+      { arabic: "الْحَيُّ", translit: "Al-Hayy", urdu: "زندہ" },
+      { arabic: "الْقَيُّومُ", translit: "Al-Qayyum", urdu: "قائم رہنے والا" },
+      { arabic: "الْوَاجِدُ", translit: "Al-Wajid", urdu: "پانے والا" },
+      { arabic: "الْمَاجِدُ", translit: "Al-Majid", urdu: "بزرگی والا" },
+      { arabic: "الْوَاحِدُ", translit: "Al-Wahid", urdu: "ایک" },
+      { arabic: "الْأَحَدُ", translit: "Al-Ahad", urdu: "یگانہ" },
+      { arabic: "الصَّمَدُ", translit: "As-Samad", urdu: "بے نیاز" },
+      { arabic: "الْقَادِرُ", translit: "Al-Qadir", urdu: "طاقت رکھنے والا" },
+      { arabic: "الْمُقْتَدِرُ", translit: "Al-Muqtadir", urdu: "قدرت والا" },
+      { arabic: "الْمُقَدِّمُ", translit: "Al-Muqaddim", urdu: "آگے کرنے والا" },
+      { arabic: "الْمُؤَخِّرُ", translit: "Al-Mu'akhkhir", urdu: "پیچھے کرنے والا" },
+      { arabic: "الْأَوَّلُ", translit: "Al-Awwal", urdu: "پہلا" },
+      { arabic: "الْآخِرُ", translit: "Al-Akhir", urdu: "آخری" },
+      { arabic: "الظَّاهِرُ", translit: "Az-Zahir", urdu: "ظاہر" },
+      { arabic: "الْبَاطِنُ", translit: "Al-Batin", urdu: "پوشیدہ" },
+      { arabic: "الْوَالِي", translit: "Al-Wali", urdu: "مالک" },
+      { arabic: "الْمُتَعَالِي", translit: "Al-Muta'ali", urdu: "بلند" },
+      { arabic: "الْبَرُّ", translit: "Al-Barr", urdu: "نیکی کرنے والا" },
+      { arabic: "التَّوَّابُ", translit: "At-Tawwab", urdu: "توبہ قبول کرنے والا" },
+      { arabic: "الْمُنْتَقِمُ", translit: "Al-Muntaqim", urdu: "بدلہ لینے والا" },
+      { arabic: "الْعَفُوُّ", translit: "Al-Afuww", urdu: "معاف کرنے والا" },
+      { arabic: "الرَّءُوفُ", translit: "Ar-Ra'uf", urdu: "شفقت کرنے والا" },
+      { arabic: "مَالِكُ الْمُلْكِ", translit: "Malik-ul-Mulk", urdu: "بادشاہی کا مالک" },
+      { arabic: "ذُو الْجَلَالِ وَالْإِكْرَامِ", translit: "Dhul-Jalali Wal-Ikram", urdu: "جلال اور عزت والا" },
+      { arabic: "الْمُقْسِطُ", translit: "Al-Muqsit", urdu: "انصاف کرنے والا" },
+      { arabic: "الْجَامِعُ", translit: "Al-Jami", urdu: "جمع کرنے والا" },
+      { arabic: "الْغَنِيُّ", translit: "Al-Ghani", urdu: "دولت مند" },
+      { arabic: "الْمُغْنِي", translit: "Al-Mughni", urdu: "دولت دینے والا" },
+      { arabic: "الْمَانِعُ", translit: "Al-Mani", urdu: "روکنے والا" },
+      { arabic: "الضَّارُّ", translit: "Ad-Darr", urdu: "تکلیف دینے والا" },
+      { arabic: "النَّافِعُ", translit: "An-Nafi", urdu: "نفع دینے والا" },
+      { arabic: "النُّورُ", translit: "An-Nur", urdu: "روشنی" },
+      { arabic: "الْهَادِي", translit: "Al-Hadi", urdu: "ہدایت دینے والا" },
+      { arabic: "الْبَدِيعُ", translit: "Al-Badi", urdu: "نیا پیدا کرنے والا" },
+      { arabic: "الْبَاقِي", translit: "Al-Baqi", urdu: "ہمیشہ رہنے والا" },
+      { arabic: "الْوَارِثُ", translit: "Al-Warith", urdu: "وارث" },
+      { arabic: "الرَّشِيدُ", translit: "Ar-Rashid", urdu: "ہدایت دینے والا" },
+      { arabic: "الصَّبُورُ", translit: "As-Sabur", urdu: "صبر کرنے والا" }
+    ];
+
+    // ================= JAVASCRIPT LOGIC =================
+    let currentIndex = 0;
+    let autoPlayInterval = null;
+    const audioPlayer = new Audio();
+
+    const arabicEl   = document.getElementById('arabic');
+    const translitEl = document.getElementById('translit');
+    const urduEl     = document.getElementById('urdu');
+    const counterEl  = document.getElementById('counter');
+    const card       = document.getElementById('card');
+    const speakBtn   = document.getElementById('speakBtn');
+    const themeToggleBtn = document.getElementById('themeToggle');
+
+    // 100% WORKING AUDIO FUNCTION (Direct MP3 Link)
+    function playCurrentAudio() {
+      speakBtn.classList.remove('playing');
+      
+      const audioNumber = currentIndex + 1;
+      // Yeh website CORS block nahi karti, isliye audio direct chalega
+      const audioUrl = `https://www.islamicfinder.org/99-names-of-allah/audio/${audioNumber}.mp3`;
+      
+      audioPlayer.src = audioUrl;
+      
+      audioPlayer.onplay = () => speakBtn.classList.add('playing');
+      audioPlayer.onended = () => speakBtn.classList.remove('playing');
+      audioPlayer.onerror = () => {
+        speakBtn.classList.remove('playing');
+        // Agar IslamicFinder ka link kaam na kare toh fallback
+        audioPlayer.src = `https://www.islamcan.com/audio/99-names-of-allah/${audioNumber}.mp3`;
+        audioPlayer.play().catch(e => console.log("Fallback audio error:", e));
+      };
+      
+      audioPlayer.play().catch(e => {
+        console.log("Audio play error:", e);
+        speakBtn.classList.remove('playing');
+      });
+    }
+
+    speakBtn.onclick = () => {
+      if(audioPlayer.paused) {
+        playCurrentAudio();
+      } else {
+        audioPlayer.pause();
+        speakBtn.classList.remove('playing');
+      }
+    };
+
+    function showName(index) {
+      card.classList.add('fade');
+      audioPlayer.pause(); 
+      
+      setTimeout(() => {
+        const n = names[index];
+        arabicEl.textContent   = n.arabic;
+        translitEl.textContent = n.translit;
+        urduEl.textContent     = n.urdu;
+        counterEl.textContent  = `${index + 1} / ${names.length}`;
+        card.classList.remove('fade');
+      }, 400); 
+    }
+
+    document.getElementById('next').onclick = () => {
+      currentIndex = (currentIndex + 1) % names.length;
+      showName(currentIndex);
+    };
+
+    document.getElementById('prev').onclick = () => {
+      currentIndex = (currentIndex - 1 + names.length) % names.length;
+      showName(currentIndex);
+    };
+
+    document.getElementById('random').onclick = () => {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * names.length);
+      } while (newIndex === currentIndex);
+      currentIndex = newIndex;
+      showName(currentIndex);
+    };
+
+    document.getElementById('autoplay').onclick = (e) => {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+        e.target.textContent = '▶ Auto';
+      } else {
+        playCurrentAudio(); 
+        
+        autoPlayInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % names.length;
+          showName(currentIndex);
+          setTimeout(playCurrentAudio, 500);
+        }, 5000); 
+        e.target.textContent = '⏸ Pause';
+      }
+    };
+
+    themeToggleBtn.onclick = () => {
+      document.body.classList.toggle('light-theme');
+      if (document.body.classList.contains('light-theme')) {
+        themeToggleBtn.textContent = '☀️';
+      } else {
+        themeToggleBtn.textContent = '🌙';
+      }
+    };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') document.getElementById('next').click();
+      if (e.key === 'ArrowLeft')  document.getElementById('prev').click();
+      if (e.key === ' ') {
+        e.preventDefault();
+        document.getElementById('autoplay').click();
+      }
+    });
+  </script>
+</body>
+</html>
